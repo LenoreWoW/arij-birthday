@@ -21,17 +21,6 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    // Initialize smooth scroll when main content is shown
-    if (!showIntro && !isTransitioning) {
-      const cleanup = initSmoothScroll();
-
-      return () => {
-        if (cleanup) cleanup();
-      };
-    }
-  }, [showIntro, isTransitioning]);
-
   const handleIntroComplete = async () => {
     setIsTransitioning(true);
 
