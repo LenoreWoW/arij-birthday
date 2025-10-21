@@ -1,91 +1,71 @@
-import Lenis from 'lenis';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import gsap from 'gsap';
 
 // Register GSAP ScrollTrigger plugin
 gsap.registerPlugin(ScrollTrigger);
 
-let lenisInstance = null;
+let scrollHandler = null;
+let resizeHandler = null;
 
 /**
- * Initialize Lenis smooth scroll with GSAP ScrollTrigger integration
- * @param {Object} options - Lenis configuration options
+ * Initialize smooth scroll using native CSS
+ * @param {Object} options - Configuration options (kept for compatibility)
  * @returns {Function} Cleanup function
  */
 export function initSmoothScroll(options = {}) {
   // Destroy existing instance if any
-  if (lenisInstance) {
+  if (scrollHandler) {
     destroySmoothScroll();
   }
 
-  // Default Lenis options
-  const defaultOptions = {
-    duration: 1.2,
-    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // easeOutExpo
-    direction: 'vertical',
-    gestureDirection: 'vertical',
-    smooth: true,
-    mouseMultiplier: 1,
-    smoothTouch: false,
-    touchMultiplier: 2,
-    infinite: false,
+  // Enable native smooth scrolling via CSS
+  document.documentElement.style.scrollBehavior = 'smooth';
+
+  // Refresh ScrollTrigger on scroll
+  scrollHandler = () => {
+    ScrollTrigger.update();
   };
-
-  // Create Lenis instance
-  lenisInstance = new Lenis({
-    ...defaultOptions,
-    ...options,
-  });
-
-  // Synchronize Lenis with GSAP ScrollTrigger
-  lenisInstance.on('scroll', ScrollTrigger.update);
-
-  // Add Lenis to GSAP ticker for smooth integration
-  gsap.ticker.add((time) => {
-    lenisInstance.raf(time * 1000);
-  });
-
-  // Disable GSAP ticker lag smoothing for more consistent scrolling
-  gsap.ticker.lagSmoothing(0);
+  window.addEventListener('scroll', scrollHandler, { passive: true });
 
   // Update ScrollTrigger on window resize
-  const handleResize = () => {
+  resizeHandler = () => {
     ScrollTrigger.refresh();
   };
-  window.addEventListener('resize', handleResize);
+  window.addEventListener('resize', resizeHandler);
 
   // Return cleanup function
   return () => {
-    window.removeEventListener('resize', handleResize);
     destroySmoothScroll();
   };
 }
 
 /**
- * Destroy Lenis smooth scroll instance
+ * Destroy smooth scroll
  */
 export function destroySmoothScroll() {
-  if (lenisInstance) {
-    // Remove from GSAP ticker
-    gsap.ticker.remove((time) => {
-      lenisInstance.raf(time * 1000);
-    });
-
-    // Destroy Lenis instance
-    lenisInstance.destroy();
-    lenisInstance = null;
-
-    // Kill all ScrollTriggers
-    ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+  if (scrollHandler) {
+    window.removeEventListener('scroll', scrollHandler);
+    scrollHandler = null;
   }
+
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler);
+    resizeHandler = null;
+  }
+
+  // Reset scroll behavior
+  document.documentElement.style.scrollBehavior = 'auto';
+
+  // Kill all ScrollTriggers
+  ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 }
 
 /**
- * Get current Lenis instance
- * @returns {Lenis|null} Current Lenis instance
+ * Get current scroll instance (for compatibility)
+ * @returns {null}
  */
 export function getLenis() {
-  return lenisInstance;
+  return null;
 }
 
 /**
@@ -94,13 +74,16 @@ export function getLenis() {
  * @param {Object} options - Scroll options
  */
 export function scrollTo(target, options = {}) {
-  if (lenisInstance) {
-    lenisInstance.scrollTo(target, {
-      offset: 0,
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      ...options,
-    });
+  let scrollTarget = target;
+
+  if (typeof target === 'string') {
+    scrollTarget = document.querySelector(target);
+  }
+
+  if (scrollTarget instanceof HTMLElement) {
+    scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'start', ...options });
+  } else if (typeof scrollTarget === 'number') {
+    window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
   }
 }
 
@@ -113,21 +96,18 @@ export function scrollToTop(options = {}) {
 }
 
 /**
- * Stop smooth scroll
+ * Stop smooth scroll (compatibility function)
  */
 export function stopScroll() {
-  if (lenisInstance) {
-    lenisInstance.stop();
-  }
+  // Native smooth scroll can't be stopped mid-animation
+  console.warn('stopScroll() is not supported with native smooth scroll');
 }
 
 /**
- * Start smooth scroll
+ * Start smooth scroll (compatibility function)
  */
 export function startScroll() {
-  if (lenisInstance) {
-    lenisInstance.start();
-  }
+  // Native smooth scroll is always active
 }
 
 /**
