@@ -27,7 +27,7 @@ function App() {
     // Start audio playback
     if (audioManagerRef.current) {
       try {
-        await audioManagerRef.current.init('/audio/birthday-music.mp3');
+        await audioManagerRef.current.init('/arij-birthday/audio/birthday-music.mp3');
         await audioManagerRef.current.play();
       } catch (error) {
         console.error('Failed to start audio:', error);
