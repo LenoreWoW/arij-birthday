@@ -1,0 +1,339 @@
+.celebration-section {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 2rem;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0f3460 0%, #16213e 50%, #1a1a2e 100%);
+}
+
+.confetti-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.celebration-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sparkles-container {
+  position: absolute;
+  top: -50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 200px;
+  pointer-events: none;
+}
+
+.sparkle {
+  position: absolute;
+  font-size: 2rem;
+  opacity: 0.8;
+}
+
+.sparkle-1 {
+  top: 20%;
+  left: 10%;
+}
+
+.sparkle-2 {
+  top: 10%;
+  left: 30%;
+}
+
+.sparkle-3 {
+  top: 30%;
+  left: 50%;
+}
+
+.sparkle-4 {
+  top: 15%;
+  right: 30%;
+}
+
+.sparkle-5 {
+  top: 25%;
+  right: 10%;
+}
+
+.sparkle-6 {
+  top: 5%;
+  left: 70%;
+}
+
+.celebration-title {
+  font-size: clamp(2.5rem, 8vw, 6rem);
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  margin: 0 0 3rem 0;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: clamp(0.5rem, 1.5vw, 1.5rem);
+  perspective: 1000px;
+}
+
+.celebration-title-letter {
+  display: inline-block;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 40px rgba(240, 147, 251, 0.6);
+  transform-origin: center;
+  will-change: transform;
+  animation: rainbow 3s linear infinite;
+  animation-delay: calc(var(--index, 0) * 0.1s);
+}
+
+@keyframes rainbow {
+  0%, 100% {
+    filter: hue-rotate(0deg);
+  }
+  50% {
+    filter: hue-rotate(180deg);
+  }
+}
+
+.celebration-message {
+  margin: 3rem 0;
+  padding: 0 2rem;
+}
+
+.celebration-message-line {
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 1rem 0;
+  font-weight: 300;
+  font-family: 'Playfair Display', serif;
+  letter-spacing: 0.02em;
+}
+
+.celebration-highlight {
+  font-weight: 500;
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 50%, #ffd700 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+}
+
+.celebration-final {
+  margin-top: 2rem;
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 600;
+  background: linear-gradient(135deg, #ffd700 0%, #f5576c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.celebration-wishes {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 4rem 0;
+  flex-wrap: wrap;
+}
+
+.wish-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem 2.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.wish-card:hover {
+  transform: translateY(-10px) scale(1.05);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(240, 147, 251, 0.5);
+  box-shadow: 0 20px 40px rgba(240, 147, 251, 0.3);
+}
+
+.wish-icon {
+  font-size: 3rem;
+  animation: bounce 2s infinite;
+}
+
+.wish-card:nth-child(2) .wish-icon {
+  animation-delay: 0.3s;
+}
+
+.wish-card:nth-child(3) .wish-icon {
+  animation-delay: 0.6s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.wish-text {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: 0.05em;
+}
+
+.audio-control {
+  margin-top: 3rem;
+  padding: 1rem 2rem;
+  font-size: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.audio-control:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(240, 147, 251, 0.5);
+  transform: scale(1.1);
+  box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+}
+
+.audio-control:active {
+  transform: scale(0.95);
+}
+
+.celebration-footer {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 2;
+}
+
+.footer-text {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+  margin: 0;
+  letter-spacing: 0.1em;
+}
+
+.footer-heart {
+  font-size: 2rem;
+  animation: heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  10%, 30% {
+    transform: scale(1.2);
+  }
+  20%, 40% {
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 1024px) {
+  .celebration-wishes {
+    gap: 1.5rem;
+  }
+
+  .wish-card {
+    padding: 1.5rem 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .celebration-section {
+    padding: 4rem 1rem;
+  }
+
+  .celebration-title {
+    margin-bottom: 2rem;
+  }
+
+  .celebration-message {
+    margin: 2rem 0;
+    padding: 0 1rem;
+  }
+
+  .celebration-message-line {
+    margin: 0.8rem 0;
+  }
+
+  .celebration-wishes {
+    gap: 1rem;
+    margin: 3rem 0;
+  }
+
+  .wish-card {
+    padding: 1.5rem 1.5rem;
+    min-width: 140px;
+  }
+
+  .wish-icon {
+    font-size: 2.5rem;
+  }
+
+  .wish-text {
+    font-size: 1rem;
+  }
+
+  .sparkles-container {
+    height: 150px;
+  }
+
+  .sparkle {
+    font-size: 1.5rem;
+  }
+
+  .celebration-footer {
+    bottom: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .celebration-wishes {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .wish-card {
+    width: 100%;
+    max-width: 250px;
+  }
+
+  .audio-control {
+    padding: 0.75rem 1.5rem;
+    font-size: 1.8rem;
+  }
+}
