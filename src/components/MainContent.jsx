@@ -10,14 +10,8 @@ function MainContent({ audioManager }) {
   const contentRef = useRef(null);
 
   useEffect(() => {
-    // Initialize smooth scroll
-    const lenis = initSmoothScroll({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      orientation: 'vertical',
-      smoothWheel: true,
-      smoothTouch: false,
-    });
+    // Initialize smooth scroll (using native CSS)
+    initSmoothScroll();
 
     // Cleanup on unmount
     return () => {
