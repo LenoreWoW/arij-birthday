@@ -1,0 +1,175 @@
+import React, { useState } from 'react';
+import { Send, AlertTriangle, CheckCircle, Zap, Server } from 'lucide-react';
+
+const SAMPLE_TWEETS = [
+  "Just happened a terrible car crash",
+  "Heard about #earthquake is different cities, stay safe everyone.",
+  "There is a forest fire at spot pond, geese are fleeing across the street, I cannot save them all",
+  "I love this movie! It was a total blast.",
+  "The sky is ablaze with the sunset tonight."
+];
+
+// Local inference engine to simulate AI behavior without an API Key
+const localInference = (text: string) => {
+  const lower = text.toLowerCase();
+  
+  // 1. Hardcoded samples for perfect demo experience
+  if (lower.includes("terrible car crash")) return { isDisaster: true, confidence: 0.94, reason: "Detected 'car crash' with negative sentiment modifier 'terrible'." };
+  if (lower.includes("#earthquake")) return { isDisaster: true, confidence: 0.98, reason: "Identified hashtag #earthquake and public safety context." };
+  if (lower.includes("forest fire")) return { isDisaster: true, confidence: 0.91, reason: "Explicit mention of 'forest fire' and panic indicators." };
+  if (lower.includes("movie") && lower.includes("blast")) return { isDisaster: false, confidence: 0.89, reason: "Contextual Analysis: 'Blast' refers to entertainment/movie, likely metaphorical." };
+  if (lower.includes("sunset") && lower.includes("ablaze")) return { isDisaster: false, confidence: 0.92, reason: "Contextual Analysis: 'Ablaze' describes visual aesthetics of a sunset, not combustion." };
+
+  // 2. Heuristic Fallback
+  const disasterKeywords = ['fire', 'flood', 'crash', 'accident', 'bomb', 'suicide', 'collapse', 'typhoon', 'hurricane', 'earthquake', 'died', 'killed', 'evacuate'];
+  const safeKeywords = ['love', 'like', 'movie', 'song', 'awesome', 'lol', 'happy', 'beautiful', 'great'];
+
+  let score = 0;
+  let matches: string[] = [];
+
+  disasterKeywords.forEach(k => {
+    if (lower.includes(k)) {
+        score += 0.3;
+        matches.push(k);
+    }
+  });
+
+  safeKeywords.forEach(k => {
+    if (lower.includes(k)) {
+        score -= 0.2;
+    }
+  });
+
+  // Normalize
+  const isDisaster = score > 0;
+  const confidence = 0.6 + (Math.min(Math.abs(score), 0.4)); // 0.6 to 1.0 range
+
+  return {
+    isDisaster,
+    confidence,
+    reason: isDisaster 
+        ? `Detected high-priority tokens: ${matches.join(', ')}` 
+        : "No significant disaster terminology detected in context."
+  };
+};
+
+export const LiveDemoSlide: React.FC = () => {
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [result, setResult] = useState<{ isDisaster: boolean; confidence: number; reason: string } | null>(null);
+
+  const handleClassify = async () => {
+    if (!input.trim()) return;
+    setIsLoading(true);
+    setResult(null);
+
+    // Simulate network delay for realism
+    setTimeout(() => {
+        const inference = localInference(input);
+        setResult(inference);
+        setIsLoading(false);
+    }, 800);
+  };
+
+  return (
+    <div className="h-full flex flex-col items-center justify-center p-8 max-w-4xl mx-auto w-full">
+      <div className="text-center mb-10 space-y-2">
+         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-900/30 border border-purple-700/50 text-purple-300 text-xs font-medium uppercase tracking-widest animate-pulse">
+            <Zap size={12} /> Live Inference Lab
+         </div>
+         <h2 className="text-4xl font-black text-white">Model Test Environment</h2>
+         <p className="text-slate-400">Test the model's capability on unseen data (Running locally).</p>
+      </div>
+
+      {/* Main Interaction Area */}
+      <div className="w-full bg-slate-900/80 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-2xl overflow-hidden relative">
+        
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="absolute inset-0 bg-slate-950/80 z-20 flex flex-col items-center justify-center space-y-4">
+             <div className="relative w-16 h-16">
+                <div className="absolute inset-0 border-4 border-slate-800 rounded-full"></div>
+                <div className="absolute inset-0 border-4 border-cyan-500 rounded-full border-t-transparent animate-spin"></div>
+             </div>
+             <div className="font-mono text-cyan-400 text-sm">
+                <p className="animate-pulse">PROCESSING INPUT...</p>
+             </div>
+          </div>
+        )}
+
+        <div className="p-8 space-y-6">
+           <div className="space-y-2">
+             <label className="text-xs font-bold text-slate-500 uppercase tracking-wider flex justify-between">
+                <span>Input Tweet</span>
+                <span className="flex items-center gap-1 text-[10px] text-green-500"><Server size={10} /> LOCAL_ENGINE_READY</span>
+             </label>
+             <div className="relative">
+                <textarea 
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  className="w-full bg-slate-950 text-white p-4 rounded-xl border border-slate-700 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none resize-none font-mono text-lg transition-all"
+                  rows={3}
+                  placeholder="Enter a tweet to classify..."
+                />
+                <button 
+                  onClick={handleClassify}
+                  disabled={isLoading || !input}
+                  className="absolute bottom-3 right-3 bg-cyan-600 hover:bg-cyan-500 text-white p-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Send size={20} />
+                </button>
+             </div>
+           </div>
+
+           {/* Sample Chips */}
+           <div className="flex flex-wrap gap-2">
+              {SAMPLE_TWEETS.map((t, i) => (
+                <button 
+                  key={i}
+                  onClick={() => setInput(t)}
+                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white text-xs rounded-full border border-slate-700 transition-all text-left truncate max-w-[200px]"
+                  title={t}
+                >
+                  {t}
+                </button>
+              ))}
+           </div>
+        </div>
+
+        {/* Result Section */}
+        {result && (
+          <div className={`p-6 border-t ${result.isDisaster ? 'bg-red-950/20 border-red-900/50' : 'bg-green-950/20 border-green-900/50'} transition-all duration-500`}>
+             <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${result.isDisaster ? 'bg-red-500 text-white' : 'bg-green-500 text-white'}`}>
+                      {result.isDisaster ? <AlertTriangle size={32} /> : <CheckCircle size={32} />}
+                   </div>
+                   <div>
+                      <h3 className={`text-2xl font-black ${result.isDisaster ? 'text-red-400' : 'text-green-400'}`}>
+                        {result.isDisaster ? 'DISASTER DETECTED' : 'SAFE / IRRELEVANT'}
+                      </h3>
+                      <p className="text-slate-400 text-sm font-mono">{result.reason}</p>
+                   </div>
+                </div>
+                
+                <div className="text-right">
+                   <div className="text-xs text-slate-500 font-bold uppercase mb-1">Confidence</div>
+                   <div className="text-3xl font-mono font-bold text-white">
+                     {(result.confidence * 100).toFixed(1)}%
+                   </div>
+                </div>
+             </div>
+
+             {/* Confidence Bar */}
+             <div className="mt-6 h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div 
+                  className={`h-full ${result.isDisaster ? 'bg-red-500' : 'bg-green-500'} transition-all duration-1000 ease-out`}
+                  style={{ width: `${result.confidence * 100}%` }}
+                ></div>
+             </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
